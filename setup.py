@@ -26,8 +26,10 @@ subprocess.run([f"mkdir {symParDir}"], shell=True)
 
 # check if script is being executed from the correct directory already or if the folder needs to be moved
 currDir = os.path.dirname(os.path.realpath(__file__))
+print(currDir)
 targetDir = subprocess.run([f"echo {repoParDir}/{name}"], shell=True, capture_output=True, text=True).stdout.strip()
-if currDir != targetPath:
+print(targetDir)
+if currDir != targetDir:
     subprocess.run([f"echo moving directory from {currDir} to {repoParDir}/{name}"], shell=True)
     subprocess.run([f"mv {currDir} {repoParDir}/{name}"], shell=True)
 
