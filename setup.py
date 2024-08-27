@@ -5,7 +5,7 @@ import os
 ######### USER VARIABLES #########
 ##################################
 
-# set name of program-director and the parent folder of the symlink (usually .config or straight in home)
+# set name of program-directory and the parent folder of the symlink (usually .config or straight in home)
 name = "nvim"
 symParDir = "$HOME/.config"
 
