@@ -1,17 +1,45 @@
-vim.g.mapleader = ' '
-
+-- set <leader> to SPACE
+vim.g.mapleader = " "
+-- enable relative line numbers
 vim.opt.relativenumber = true
+-- highlight current line
+vim.opt.cursorline = true
+-- disable line wrap
+vim.opt.wrap = false
 
-vim.lsp.config['ols'] =
-{
-	cmd = { 'ols' },
-	filetypes = { 'odin' },
-	root_markers = { 'ols.json' },
+-- ### fix search highlighting contrast if cursor is on the result ###
+local search_cursor_aug = vim.api.nvim_create_augroup("SearchCursor", { clear = true })
 
-}
-vim.lsp.enable( 'ols' )
+-- 1. Activate block cursor when you start a search
+vim.api.nvim_create_autocmd("CmdlineEnter", {
+  group = search_cursor_aug,
+  pattern = { "/", "\\?" },
+  callback = function()
+    vim.opt.guicursor:append("n-v-c:block-Cursor/lCursor")
+  end,
+})
 
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
+-- 2. Smart <Esc> that does both: clear highlights + restore cursor
+vim.keymap.set("n", "<Esc>", function()
+  local was_hlsearch = vim.v.hlsearch == 1
 
-vim.api.nvim_set_keymap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
+  -- Clear search highlights if they are active
+  if was_hlsearch then
+    vim.cmd("nohlsearch")
+  end
+
+  -- Remove the block cursor rule
+  local cursor = vim.opt.guicursor:get()
+  local new_cursor = {}
+  for _, entry in ipairs(cursor) do
+    if not entry:match("^n%-v%-c:block") then
+      table.insert(new_cursor, entry)
+    end
+  end
+  vim.opt.guicursor = new_cursor
+
+  -- If highlights weren't active, pass through normal <Esc> behavior
+  if not was_hlsearch then
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", false)
+  end
+end, { desc = "Clear search + restore cursor" })
