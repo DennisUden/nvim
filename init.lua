@@ -6,6 +6,8 @@ vim.opt.relativenumber = true
 vim.opt.cursorline = true
 -- disable line wrap
 vim.opt.wrap = false
+-- disable swap file
+vim.opt.swapfile = false
 
 -- ### fix search highlighting contrast if cursor is on the result ###
 local search_cursor_aug = vim.api.nvim_create_augroup("SearchCursor", { clear = true })
